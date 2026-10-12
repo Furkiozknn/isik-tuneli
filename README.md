@@ -147,7 +147,7 @@ Colors are rendered in `SRGBColorSpace` and finished with `ACESFilmicToneMapping
 Two independent point-cloud systems, both custom `ShaderMaterial`s with additive blending and pixel-ratio-aware point sizing so they stay crisp on high-DPI screens:
 
 - **Starfield** — 700 points with a per-star phase offset driving a sine-wave twinkle in the fragment shader
-- **Engine trail + impact bursts** — a shared pool of 70 particles. Idle exhaust spawns continuously behind the ship in alternating pink/cyan; a shield block, an orb pickup and a power-up pickup each spawn a small radial burst (5, 5 and 10 particles) at the spot. Both fade via a `life` value decayed each frame
+- **Engine trail + impact bursts** — a shared pool of 70 particles. Idle exhaust spawns continuously behind the ship in alternating pink/cyan; a shield block, an orb pickup and a power-up pickup each spawn a small radial burst (14, 5 and 10 particles) at the spot. Both fade via a `life` value decayed each frame
 
 ### Object Pooling
 
