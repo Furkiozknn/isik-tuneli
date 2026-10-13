@@ -37,7 +37,7 @@
     "webgl",
     "webgl-game"
   ],
-  "summary": "Endless browser space-runner with real Three.js bloom, hand-written particles and an audio engine synthesized live in Web Audio - not one sound file in the repo. Skim an obstacle without touching it and take the near-miss bonus. A daily run seeded from the UTC date deals every player the same obstacles. 0.8 MB, no build step.",
+  "summary": "Endless browser space-runner with Three.js bloom and a Web Audio engine synthesized live - no sound files, no build step. Near-miss bonuses and a daily seeded run everyone plays the same.",
   "key_features": [
     "Endless browser space-runner with real Three.js bloom post-processing and hand-written particles",
     "Audio engine synthesized live in Web Audio - not one sound file in the repository",
