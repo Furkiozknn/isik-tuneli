@@ -31,9 +31,9 @@ It is a small, honest piece of web tech: real [Three.js](https://threejs.org/) b
 |---|---|
 | **Play** | [furkiozknn.github.io/nova-drift](https://furkiozknn.github.io/nova-drift/) — or [run it locally](#run-locally) in one command |
 | **Objective** | Survive as long as you can; score comes from distance, orbs and near-misses |
-| **Controls** | Mouse / touch-drag / arrow keys or WASD · `Space`/`Enter` start · `Esc` pause · Settings: sound, language (EN/TR) |
+| **Controls** | Mouse / touch-drag / arrow keys or WASD / gamepad · `Space`/`Enter` (or A) start · `Esc` (or Start) pause · Settings: sound, language (EN/TR) |
 | **Platform** | Desktop and mobile browsers with WebGL and import maps (Chrome/Edge 89+, Firefox 108+, Safari 16.4+) |
-| **Weight** | About 0.87 MB on first load (868,177 bytes measured), 19 requests, all from the page's own origin |
+| **Weight** | About 0.87 MB on first load (868,177 bytes measured before gamepad support; +5.8 KB since), 20 requests, all from the page's own origin |
 
 ## Table of Contents
 
@@ -78,9 +78,15 @@ Stay alive. A run ends the moment the ship touches a red rock (unless a shield a
 | 🖱️ Mouse move | Ship follows your pointer directly |
 | 👆 Touch-drag | A virtual joystick appears wherever you touch |
 | ⌨️ Arrow keys / WASD | Nudge the ship left / right / up / down |
+| 🎮 Gamepad left stick / d-pad | Steer, the same nudge as the arrow keys; letting go holds the line |
+| 🎮 A | Play from the menu, try again after a crash, resume from pause |
+| 🎮 Start | Pause and resume |
+| 🎮 B | From the pause card, back to the menu |
 | `Space` / `Enter` | Start or restart the run (a focused button gets its own key press instead) |
 | `Escape` / pause button | Pause — freezes the scene exactly where it was; Resume, Restart, Settings and Menu on the card |
 | Switch window / tab | Pauses automatically and releases any held key, so the ship does not drift into a wall while you are away |
+
+**Gamepad.** Any pad the browser reports in the standard layout works, and two pads can be connected at once (steering comes from whichever is pushed harder). The Gamepad API has no input events, so the page polls once per frame. Buttons act on the *press*, not the hold, so holding A through a crash does not instantly restart the run. Steering is a velocity like the touch joystick, so letting go holds your line instead of snapping back to the centre. A short hint names the buttons the first time a pad is used in a run. The mapping and the menu flow are pure functions in `gamepad.js`, which the tests import directly.
 
 The ship never chases your pointer instantly — its position *eases* toward a target each frame, and the last frame's velocity drives a small bank-and-tilt rotation, so movement reads as inertia rather than teleportation.
 
@@ -228,6 +234,7 @@ npm test                                      # 61 tests in 13 spec files
 | `smoke.spec.js` | No console errors with default and reduced-motion loads; the Daily toggle works; `manifest.json` is well-formed |
 | `focus.spec.js` | Switching window or tab pauses a running game and releases held keys |
 | `prng.spec.js` | The Daily Challenge RNG, executed from the real `rng.js` (not a copy): same seed, same sequence; stable across a UTC day; pinned to today's shipped sequence |
+| `gamepad.spec.js` | Gamepad mapping, executed from the real `gamepad.js`: deadzone, stick and d-pad, two pads, press-not-hold, the menu flow; then a fake pad drives the real page through start, steer, pause, resume, menu and a crash |
 | `adaptive.spec.js` | The render-scale decision function (thresholds, hysteresis, floor/ceiling), isolated and against the live page via `?debug=1` |
 | `storage.spec.js` | The game starts, scores and mutes with `localStorage` throwing on every call |
 | `no-external-requests.spec.js` | Nothing leaves the origin (observed, not just blocked) |
@@ -274,6 +281,7 @@ nova-drift/
 ├── styles.css           # palette tokens, HUD, overlays, cards, buttons, screen band
 ├── script.js            # scene setup, game loop, audio, everything
 ├── rng.js                # the daily seed + PRNG, alone so tests can import it
+├── gamepad.js            # gamepad mapping and menu flow, pure, alone for the same reason
 ├── manifest.json         # PWA manifest (installable, fullscreen)
 ├── package.json           # dev-only: Playwright test runner
 ├── playwright.config.js   # dev-only: Playwright config (serves the page over http, no build)
