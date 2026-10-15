@@ -130,11 +130,15 @@ test.describe('in the page', () => {
     await expect(page.locator('#hint')).toContainText('Gamepad');
 
     const x0 = await page.evaluate(() => window.__novaDriftDebug.world().targetX);
+    // Hold the stick until the target has moved, rather than for a fixed time:
+    // a loaded CI runner can render few frames in 400 ms.
     await page.evaluate(() => { window.__pad.x = 1; });
-    await page.waitForTimeout(400);
+    await expect.poll(() => page.evaluate(() => window.__novaDriftDebug.world().targetX), { timeout: 10000 })
+      .toBeGreaterThan(x0 + 0.3);
     await page.evaluate(() => { window.__pad.x = 0; });
+    // Let a few frames see the release before measuring the hold.
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r)))));
     const x1 = await page.evaluate(() => window.__novaDriftDebug.world().targetX);
-    expect(x1).toBeGreaterThan(x0 + 0.3);
     // Letting go holds the line: the stick is a velocity, not a position.
     await page.waitForTimeout(300);
     const x2 = await page.evaluate(() => window.__novaDriftDebug.world().targetX);
