@@ -4,6 +4,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { mulberry32, dailySeed, dailyStorageKey } from './rng.js';
+import { readAll, rising, actionFor } from './gamepad.js';
 
 // ---------- Renderer / Scene / Camera ----------
 const canvas = document.getElementById('scene');
@@ -75,6 +76,7 @@ const STR = {
     hintPointer: 'Move the mouse to steer · collect cyan orbs · avoid red rocks',
     hintTouch: 'Drag anywhere to steer · collect cyan orbs · avoid red rocks',
     hintKeys: 'Arrows / WASD also steer · Esc pauses',
+    hintPad: 'Gamepad: left stick steers · A plays · Start pauses',
     bestLine: 'BEST',
   },
   tr: {
@@ -89,6 +91,7 @@ const STR = {
     hintPointer: 'Yönlendirmek için fareyi oynat · camgöbeği küreleri topla · kırmızı kayalardan kaç',
     hintTouch: 'Yönlendirmek için ekranda sürükle · camgöbeği küreleri topla · kırmızı kayalardan kaç',
     hintKeys: 'Oklar / WASD de çalışır · Esc duraklatır',
+    hintPad: 'Oyun kolu: sol çubuk yönlendirir · A oynatır · Start duraklatır',
     bestLine: 'EN İYİ',
   },
 };
@@ -781,6 +784,36 @@ window.addEventListener('keydown', (e) => {
 });
 window.addEventListener('keyup', (e) => keys.delete(e.code));
 
+// ---------- Input: gamepad ----------
+// Polled once per frame (the Gamepad API has no input events, only
+// connect/disconnect). Steering is a velocity like the touch joystick; the
+// buttons act on the press, through the same start/pause/resume functions the
+// keyboard uses. The mapping and the menu flow live in ./gamepad.js, which
+// test/gamepad.spec.js imports directly.
+let pad = { x: 0, y: 0, a: false, b: false, start: false, connected: false };
+let padPrev = pad;
+let padHintShown = false;
+function pollGamepad() {
+  if (!navigator.getGamepads) return;
+  let pads;
+  try { pads = navigator.getGamepads(); } catch { return; }
+  pad = readAll(pads);
+  const edge = rising(padPrev, pad);
+  padPrev = pad;
+  switch (actionFor(state, edge, settingsOpen)) {
+    case 'begin': beginFromMenu(); break;
+    case 'restart': startGame(); break;
+    case 'pause': pauseGame(); break;
+    case 'resume': resumeGame(); break;
+    case 'menu': goMenu(); break;
+    default: break;
+  }
+  if (pad.connected && !padHintShown && state === 'playing') {
+    padHintShown = true;
+    showHint(t.hintPad, 4000);
+  }
+}
+
 // A keyup that happens while another window has focus never reaches the page,
 // so a key held during an alt-tab would stay "held" and steer the ship into
 // the wall after the player came back. Forget held keys when focus goes, and
@@ -1163,6 +1196,10 @@ function updatePlaying(dt) {
     target.x += joyVec.x * kSpeed * dt;
     target.y -= joyVec.y * kSpeed * dt;
   }
+  if (pad.x !== 0 || pad.y !== 0) {
+    target.x += pad.x * kSpeed * dt;
+    target.y += pad.y * kSpeed * dt;
+  }
   target.x = THREE.MathUtils.clamp(target.x, -PLAY_RADIUS, PLAY_RADIUS);
   target.y = THREE.MathUtils.clamp(target.y, -PLAY_RADIUS, PLAY_RADIUS);
 
@@ -1347,6 +1384,7 @@ function frame(rawDt, t, adapt, draw = true) {
 
   starMat.uniforms.uTime.value = t;
 
+  pollGamepad();
   if (state === 'playing') updatePlaying(dt);
   else if (state !== 'paused') idleDrift(t);
 
@@ -1377,6 +1415,9 @@ if (new URLSearchParams(window.location.search).get('debug') === '1') {
     dailySeed,
     getRenderScale() { return renderScale; },
     heldKeys() { return [...keys]; },
+    pad() { return { ...pad }; },
+    // Ends the run the way a rock does, for tests that need a game-over screen.
+    crash() { if (state === 'playing') endGame(); },
     // Frame-exact driving, used to record the promo clip and to measure input
     // latency: manual() stops the rAF loop, step(dt) advances one frame
     // (step(dt, false) skips drawing: a software-GL machine cannot keep up with
