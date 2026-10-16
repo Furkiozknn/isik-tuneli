@@ -33,7 +33,7 @@ It is a small, honest piece of web tech: real [Three.js](https://threejs.org/) b
 | **Objective** | Survive as long as you can; score comes from distance, orbs and near-misses |
 | **Controls** | Mouse / touch-drag / arrow keys or WASD / gamepad · `Space`/`Enter` (or A) start · `Esc` (or Start) pause · Settings: sound, language (EN/TR) |
 | **Platform** | Desktop and mobile browsers with WebGL and import maps (Chrome/Edge 89+, Firefox 108+, Safari 16.4+) |
-| **Weight** | About 0.87 MB on first load (868,177 bytes measured before gamepad support; +5.8 KB since), 20 requests, all from the page's own origin |
+| **Weight** | About 0.87 MB on first load (868,177 bytes measured before gamepad support and run codes; +11 KB since), 20 requests, all from the page's own origin |
 
 ## Table of Contents
 
@@ -44,6 +44,7 @@ It is a small, honest piece of web tech: real [Three.js](https://threejs.org/) b
   - [Scoring](#scoring)
   - [Leaderboard](#leaderboard)
   - [Daily Challenge](#daily-challenge)
+  - [Run Codes & Challenge Links](#run-codes--challenge-links)
 - [How It Works](#how-it-works)
   - [Scene, Camera & Tunnel](#scene-camera--tunnel)
   - [Bloom Pipeline](#bloom-pipeline)
@@ -120,7 +121,17 @@ The top **5** scores persist locally via `localStorage` and are rendered on both
 
 A toggle on the start screen ("DAILY MODE" / "GÜNLÜK MOD") switches spawning from real randomness to a **seeded** run: a small [mulberry32](https://github.com/bryc/code/blob/master/jshash/PRNGs.md) PRNG, seeded from the current UTC date (`YYYYMMDD` as an integer), replaces every `Math.random()` call in the obstacle/orb/power-up spawn logic. Two players who open the page on the same calendar day get the byte-for-byte identical spawn sequence — same obstacles, same orbs, same power-ups, in the same order — so their scores are genuinely comparable, not just two unrelated random runs.
 
-Today's Daily Challenge best is tracked separately from the endless-mode top-5 (`localStorage` key `novaDriftDaily-YYYYMMDD`, one per day) so the two modes never mix. Regular endless mode is untouched — it still calls real `Math.random()` — this is strictly additive.
+Today's Daily Challenge best is tracked separately from the endless-mode top-5 (`localStorage` key `novaDriftDaily-YYYYMMDD`, one per day) so the two modes never mix.
+
+### Run Codes & Challenge Links
+
+Every run is seeded now, not only the daily one. An endless run draws a fresh random 32-bit seed, and the game-over card shows it as an 8-character **run code** such as `K7Q2-M9XA`. **COPY CHALLENGE LINK** puts a short line and a link on the clipboard: *"I scored 1234 in Nova Drift. Same rocks, same orbs. Beat it: …?run=K7Q2-M9XA"*. Whoever opens the link plays the exact same spawn sequence, so the comparison is fair with no server involved. The same idea already makes the Daily Challenge work; this extends it to any run, on any day.
+
+- **Code format.** Crockford base32 (no I, L, O or U), so a code read out loud or retyped from a screenshot survives. Case, dashes and spaces are ignored, and I/L/O are read as 1/1/0. The 8 characters carry the seed plus an 8-bit check, so a mistyped code is rejected instead of starting a different run. The test measures that more than 98% of one-character slips are caught.
+- **A challenge stays on for retries.** "Try again" replays the same code. A challenge link wins over `?daily=1`, and turning Daily Mode on ends the challenge. The HUD tag reads `CHALLENGE K7Q2-M9XA`.
+- **The link is clean.** It is the page address with `?run=` and nothing else, so it never carries `?debug=1`.
+- **No clipboard?** In an http page or a portal frame without permission, the card shows the link itself in place of the code, selectable in one tap.
+- **Scores.** Challenge runs count toward the local top 5 like any endless run. Nothing is stored that was not stored before.
 
 ---
 
@@ -235,6 +246,7 @@ npm test                                      # 61 tests in 13 spec files
 | `focus.spec.js` | Switching window or tab pauses a running game and releases held keys |
 | `prng.spec.js` | The Daily Challenge RNG, executed from the real `rng.js` (not a copy): same seed, same sequence; stable across a UTC day; pinned to today's shipped sequence |
 | `gamepad.spec.js` | Gamepad mapping, executed from the real `gamepad.js`: deadzone, stick and d-pad, two pads, press-not-hold, the menu flow; then a fake pad drives the real page through start, steer, pause, resume, menu and a crash |
+| `run-code.spec.js` | Run codes, executed from the real `rng.js`: round trip, forgiving input, garbage rejected, one-character slips caught; then the page: the same code replays the same spawns, plain runs differ, an invalid code is ignored, the card shows the code and copies a clean link, Daily Mode ends a challenge |
 | `adaptive.spec.js` | The render-scale decision function (thresholds, hysteresis, floor/ceiling), isolated and against the live page via `?debug=1` |
 | `storage.spec.js` | The game starts, scores and mutes with `localStorage` throwing on every call |
 | `no-external-requests.spec.js` | Nothing leaves the origin (observed, not just blocked) |
@@ -280,7 +292,7 @@ nova-drift/
 ├── index.html          # markup, HUD, overlays, import map, OG/Twitter meta
 ├── styles.css           # palette tokens, HUD, overlays, cards, buttons, screen band
 ├── script.js            # scene setup, game loop, audio, everything
-├── rng.js                # the daily seed + PRNG, alone so tests can import it
+├── rng.js                # the daily seed, the PRNG and run codes, alone so tests can import it
 ├── gamepad.js            # gamepad mapping and menu flow, pure, alone for the same reason
 ├── manifest.json         # PWA manifest (installable, fullscreen)
 ├── package.json           # dev-only: Playwright test runner
