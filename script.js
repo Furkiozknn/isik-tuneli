@@ -78,7 +78,7 @@ const STR = {
     hintKeys: 'Arrows / WASD also steer · Esc pauses',
     hintPad: 'Gamepad: left stick steers · A plays · Start pauses',
     runCode: 'RUN CODE', copyLink: 'COPY CHALLENGE LINK', copied: 'LINK COPIED', challenge: 'CHALLENGE',
-    shareLine: 'I scored {s} in Nova Drift. Same rocks, same orbs. Beat it:',
+    shareLine: 'I scored {s} in Işık Tüneli. Same rocks, same orbs. Beat it:',
     bestLine: 'BEST',
   },
   tr: {
@@ -95,7 +95,7 @@ const STR = {
     hintKeys: 'Oklar / WASD de çalışır · Esc duraklatır',
     hintPad: 'Oyun kolu: sol çubuk yönlendirir · A oynatır · Start duraklatır',
     runCode: 'KOŞU KODU', copyLink: 'MEYDAN OKUMA LİNKİNİ KOPYALA', copied: 'LİNK KOPYALANDI', challenge: 'MEYDAN OKUMA',
-    shareLine: "Nova Drift'te {s} puan yaptım. Aynı kayalar, aynı küreler. Geç bakalım:",
+    shareLine: "Işık Tüneli'nde {s} puan yaptım. Aynı kayalar, aynı küreler. Geç bakalım:",
     bestLine: 'EN İYİ',
   },
 };

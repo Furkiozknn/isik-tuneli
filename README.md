@@ -1,13 +1,13 @@
-![Nova Drift](assets/banner.svg)
+![Işık Tüneli](assets/banner.svg)
 
-<p align="center"><img src="docs/reel/reel.gif" alt="nova-drift - 15 saniyelik tanıtım videosu" width="720"></p>
+<p align="center"><img src="docs/reel/reel.gif" alt="Işık Tüneli - 15 saniyelik tanıtım videosu" width="720"></p>
 <p align="center"><sub><a href="docs/reel/reel.mp4">Sesli MP4 sürümü</a></sub></p>
 
 <div align="center">
 
-**[▶ Play in your browser — furkiozknn.github.io/nova-drift](https://furkiozknn.github.io/nova-drift/)**
+**[▶ Play in your browser — furkiozknn.github.io/isik-tuneli](https://furkiozknn.github.io/isik-tuneli/)**
 
-![Nova Drift gameplay: the ship banks through a tunnel of light rings, dodging red rocks and collecting cyan orbs while the score counts up to 673](assets/gameplay.webp)
+![Işık Tüneli gameplay: the ship banks through a tunnel of light rings, dodging red rocks and collecting cyan orbs while the score counts up to 673](assets/gameplay.webp)
 
 <sub>Real gameplay, not a montage: <code>node test/record-reel.js</code> opens the game with its interface hidden (<code>?rec=1</code>),
 steps it frame by frame, steers it with pointer input and writes every frame. Six seconds of one portrait run, 0.46 MB.</sub>
@@ -17,19 +17,19 @@ steps it frame by frame, steers it with pointer input and writes every frame. Si
 ![Build step](https://img.shields.io/badge/build%20step-none-6dff9e?style=flat-square)
 ![Audio](https://img.shields.io/badge/audio-synthesized%20live-ffd76d?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-browser%20(desktop%20%2B%20mobile)-7ee8ff?style=flat-square)
-[![CI](https://github.com/Furkiozknn/nova-drift/actions/workflows/ci.yml/badge.svg)](https://github.com/Furkiozknn/nova-drift/actions/workflows/ci.yml)
+[![CI](https://github.com/Furkiozknn/isik-tuneli/actions/workflows/ci.yml/badge.svg)](https://github.com/Furkiozknn/isik-tuneli/actions/workflows/ci.yml)
 
 </div>
 
 ---
 
-**Nova Drift** is an endless space-runner that plays in any modern browser. Your ship holds its line while a tunnel of light rushes past; you drift left, right, up and down to dodge red rocks, collect cyan orbs and grab power-ups, and the speed never stops climbing.
+**Işık Tüneli** (Turkish for "Light Tunnel"; formerly Nova Drift) is an endless space-runner that plays in any modern browser. Your ship holds its line while a tunnel of light rushes past; you drift left, right, up and down to dodge red rocks, collect cyan orbs and grab power-ups, and the speed never stops climbing.
 
 It is a small, honest piece of web tech: real [Three.js](https://threejs.org/) bloom post-processing, hand-written particle shaders, and an audio engine synthesized live with the Web Audio API — there is not a single sound file in the repository. Three.js and the font are vendored, so the page makes no request to any other origin. No bundler, no build step: serve the folder and play.
 
 | | |
 |---|---|
-| **Play** | [furkiozknn.github.io/nova-drift](https://furkiozknn.github.io/nova-drift/) — or [run it locally](#run-locally) in one command |
+| **Play** | [furkiozknn.github.io/isik-tuneli](https://furkiozknn.github.io/isik-tuneli/) — or [run it locally](#run-locally) in one command |
 | **Objective** | Survive as long as you can; score comes from distance, orbs and near-misses |
 | **Controls** | Mouse / touch-drag / arrow keys or WASD / gamepad · `Space`/`Enter` (or A) start · `Esc` (or Start) pause · Settings: sound, language (EN/TR) |
 | **Platform** | Desktop and mobile browsers with WebGL and import maps (Chrome/Edge 89+, Firefox 108+, Safari 16.4+) |
@@ -125,7 +125,7 @@ Today's Daily Challenge best is tracked separately from the endless-mode top-5 (
 
 ### Run Codes & Challenge Links
 
-Every run is seeded now, not only the daily one. An endless run draws a fresh random 32-bit seed, and the game-over card shows it as an 8-character **run code** such as `K7Q2-M9XA`. **COPY CHALLENGE LINK** puts a short line and a link on the clipboard: *"I scored 1234 in Nova Drift. Same rocks, same orbs. Beat it: …?run=K7Q2-M9XA"*. Whoever opens the link plays the exact same spawn sequence, so the comparison is fair with no server involved. The same idea already makes the Daily Challenge work; this extends it to any run, on any day.
+Every run is seeded now, not only the daily one. An endless run draws a fresh random 32-bit seed, and the game-over card shows it as an 8-character **run code** such as `K7Q2-M9XA`. **COPY CHALLENGE LINK** puts a short line and a link on the clipboard: *"I scored 1234 in Işık Tüneli. Same rocks, same orbs. Beat it: …?run=K7Q2-M9XA"*. Whoever opens the link plays the exact same spawn sequence, so the comparison is fair with no server involved. The same idea already makes the Daily Challenge work; this extends it to any run, on any day.
 
 - **Code format.** Crockford base32 (no I, L, O or U), so a code read out loud or retyped from a screenshot survives. Case, dashes and spaces are ignored, and I/L/O are read as 1/1/0. The 8 characters carry the seed plus an 8-bit check, so a mistyped code is rejected instead of starting a different run. The test measures that more than 98% of one-character slips are caught.
 - **A challenge stays on for retries.** "Try again" replays the same code. A challenge link wins over `?daily=1`, and turning Daily Mode on ends the challenge. The HUD tag reads `CHALLENGE K7Q2-M9XA`.
@@ -210,8 +210,8 @@ The interface is English and Turkish. It follows the browser language (`tr*` get
 No install, no build, no bundler. Serve the folder over HTTP and open it:
 
 ```bash
-git clone https://github.com/Furkiozknn/nova-drift.git
-cd nova-drift
+git clone https://github.com/Furkiozknn/isik-tuneli.git
+cd isik-tuneli
 python3 -m http.server 8000      # then open http://localhost:8000
 # or, with Node:  npx serve .    # then open the printed URL
 ```
@@ -288,7 +288,7 @@ The pilot is a humanlike pointer driver (0.17 s reaction delay, hand tremor, one
 ## Project Structure
 
 ```
-nova-drift/
+isik-tuneli/
 ├── index.html          # markup, HUD, overlays, import map, OG/Twitter meta
 ├── styles.css           # palette tokens, HUD, overlays, cards, buttons, screen band
 ├── script.js            # scene setup, game loop, audio, everything

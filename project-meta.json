@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0.0",
-  "id": "nova-drift",
+  "id": "isik-tuneli",
   "owner": "Furkiozknn",
-  "repository": "https://github.com/Furkiozknn/nova-drift",
-  "homepage": "https://furkiozknn.github.io/nova-drift/",
-  "releases": "https://github.com/Furkiozknn/nova-drift/releases",
+  "repository": "https://github.com/Furkiozknn/isik-tuneli",
+  "homepage": "https://furkiozknn.github.io/isik-tuneli/",
+  "releases": "https://github.com/Furkiozknn/isik-tuneli/releases",
   "status": "active",
   "category": "game",
   "platform": [
@@ -63,7 +63,7 @@
     "workflows": [
       "ci.yml"
     ],
-    "badge": "https://github.com/Furkiozknn/nova-drift/actions/workflows/ci.yml/badge.svg"
+    "badge": "https://github.com/Furkiozknn/isik-tuneli/actions/workflows/ci.yml/badge.svg"
   },
   "docs": {
     "readme": "README.md",
@@ -83,7 +83,7 @@
       "javascript",
       "webaudio"
     ],
-    "primary_link": "https://furkiozknn.github.io/nova-drift/"
+    "primary_link": "https://furkiozknn.github.io/isik-tuneli/"
   },
   "provenance": {
     "generated_at": "2026-09-22",
