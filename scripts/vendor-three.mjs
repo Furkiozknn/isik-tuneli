@@ -40,10 +40,19 @@ const VENDOR = process.argv[2] ? path.resolve(process.argv[2]) : path.join(ROOT,
 
 //: The entries in vendor/ this script produces, and therefore the only ones
 //: it may remove. Anything else in that directory belongs to someone else.
-const OWNED = ['three.module.min.js', 'jsm', 'README.md'];
+//: `three.module.min.js` stays listed so a re-run removes the single minified
+//: file older three releases shipped (see ENTRIES below).
+const OWNED = ['three.module.js', 'three.core.js', 'three.module.min.js', 'jsm', 'README.md'];
 
-// The addons script.js imports, as paths inside the three package.
+// The files script.js imports, as paths inside the three package: the core
+// (what the import map calls `three`) and the addons.
+//
+// Newer three releases (checked on 0.186.1) no longer ship `build/three.module.min.js`.
+// `build/three.module.js` now imports the shared half of the
+// library from `./three.core.js`, so it is walked like any other entry and the
+// closure picks up three.core.js on its own.
 const ENTRIES = [
+  'build/three.module.js',
   'examples/jsm/postprocessing/EffectComposer.js',
   'examples/jsm/postprocessing/RenderPass.js',
   'examples/jsm/postprocessing/UnrealBloomPass.js',
@@ -82,16 +91,14 @@ for (const name of OWNED) {
 }
 fs.mkdirSync(VENDOR, { recursive: true });
 
-let total = copy(
-  path.join(THREE, 'build', 'three.module.min.js'),
-  path.join(VENDOR, 'three.module.min.js'),
-);
-let count = 1;
+let total = 0;
+let count = 0;
 
 for (const rel of closure()) {
-  // examples/jsm/postprocessing/X.js -> vendor/jsm/postprocessing/X.js, so the
-  // relative imports between addons keep resolving unchanged.
-  const out = rel.replace(/^examples\//, '');
+  // examples/jsm/postprocessing/X.js -> vendor/jsm/postprocessing/X.js and
+  // build/three.core.js -> vendor/three.core.js, so the relative imports
+  // inside each group keep resolving unchanged.
+  const out = rel.replace(/^examples\//, '').replace(/^build\//, '');
   total += copy(path.join(THREE, rel), path.join(VENDOR, out));
   count += 1;
 }
