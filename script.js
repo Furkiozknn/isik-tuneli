@@ -1214,7 +1214,10 @@ function resumeGame() {
 }
 
 // ---------- Main loop ----------
-const clock = new THREE.Clock();
+// THREE.Timer replaces THREE.Clock, which three deprecated (it logs a warning
+// on construction). update() with no argument reads performance.now(), the
+// same source Clock used, so frame timing is unchanged.
+const timer = new THREE.Timer();
 let fovKick = 0;
 
 function updatePlaying(dt) {
@@ -1439,7 +1442,8 @@ function frame(rawDt, t, adapt, draw = true) {
 
 function animate() {
   if (manual) return;
-  frame(clock.getDelta(), clock.getElapsedTime(), true);
+  timer.update();
+  frame(timer.getDelta(), timer.getElapsed(), true);
   requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
