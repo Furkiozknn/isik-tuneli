@@ -5,7 +5,7 @@
 
 <div align="center">
 
-**[▶ Play in your browser — furkiozknn.github.io/isik-tuneli](https://furkiozknn.github.io/isik-tuneli/)**
+**[▶ Play in your browser — furkiozknn.github.io/isik-tuneli](https://furkiozknn.github.io/isik-tuneli/)** · also on **[itch.io](https://furkiozknn.itch.io/isik-tuneli)**
 
 ![Işık Tüneli gameplay: the ship banks through a tunnel of light rings, dodging red rocks and collecting cyan orbs while the score counts up to 673](assets/gameplay.webp)
 
@@ -29,7 +29,7 @@ It is a small, honest piece of web tech: real [Three.js](https://threejs.org/) b
 
 | | |
 |---|---|
-| **Play** | [furkiozknn.github.io/isik-tuneli](https://furkiozknn.github.io/isik-tuneli/) — or [run it locally](#run-locally) in one command |
+| **Play** | [furkiozknn.github.io/isik-tuneli](https://furkiozknn.github.io/isik-tuneli/) or [furkiozknn.itch.io/isik-tuneli](https://furkiozknn.itch.io/isik-tuneli) — or [run it locally](#run-locally) in one command |
 | **Objective** | Survive as long as you can; score comes from distance, orbs and near-misses |
 | **Controls** | Mouse / touch-drag / arrow keys or WASD / gamepad · `Space`/`Enter` (or A) start · `Esc` (or Start) pause · Settings: sound, language (EN/TR) |
 | **Platform** | Desktop and mobile browsers with WebGL and import maps (Chrome/Edge 89+, Firefox 108+, Safari 16.4+) |
