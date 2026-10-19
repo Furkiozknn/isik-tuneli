@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0.0",
-  "id": "nova-drift",
+  "id": "isik-tuneli",
   "owner": "Furkiozknn",
-  "repository": "https://github.com/Furkiozknn/nova-drift",
-  "homepage": "https://furkiozknn.github.io/nova-drift/",
-  "releases": "https://github.com/Furkiozknn/nova-drift/releases",
+  "repository": "https://github.com/Furkiozknn/isik-tuneli",
+  "homepage": "https://furkiozknn.github.io/isik-tuneli/",
+  "releases": "https://github.com/Furkiozknn/isik-tuneli/releases",
   "status": "active",
   "category": "game",
   "platform": [
@@ -13,7 +13,7 @@
   "primary_language": "JavaScript",
   "technologies": [
     "JavaScript",
-    "Three.js r160",
+    "Three.js r186",
     "WebGL",
     "Web Audio API",
     "no build step"
@@ -37,12 +37,12 @@
     "webgl",
     "webgl-game"
   ],
-  "summary": "Endless browser space-runner with real Three.js bloom, hand-written particles and an audio engine synthesized live in Web Audio - not one sound file in the repo. Skim an obstacle without touching it and take the near-miss bonus. A daily run seeded from the UTC date deals every player the same obstacles. 0.8 MB, no build step.",
+  "summary": "Endless browser space-runner with Three.js bloom and a Web Audio engine synthesized live - no sound files, no build step. Near-miss bonuses and a daily seeded run everyone plays the same.",
   "key_features": [
     "Endless browser space-runner with real Three.js bloom post-processing and hand-written particles",
     "Audio engine synthesized live in Web Audio - not one sound file in the repository",
     "Skim an obstacle without touching it and take the near-miss bonus",
-    "A daily run seeded from the UTC date deals every player the same obstacles; 0.8 MB first load, no build step",
+    "A daily run seeded from the UTC date deals every player the same obstacles; 1 MB first load, no build step",
     "Every test runs with the page sealed to its own origin, so a reintroduced CDN import breaks CI instead of passing it"
   ],
   "media": {
@@ -55,15 +55,15 @@
     "videos": []
   },
   "tests": {
-    "count": 61,
-    "source": "`61 passed` (Playwright)",
-    "measured": "2026-09-29"
+    "count": 81,
+    "source": "`81 passed` (Playwright)",
+    "measured": "2026-10-19"
   },
   "ci": {
     "workflows": [
       "ci.yml"
     ],
-    "badge": "https://github.com/Furkiozknn/nova-drift/actions/workflows/ci.yml/badge.svg"
+    "badge": "https://github.com/Furkiozknn/isik-tuneli/actions/workflows/ci.yml/badge.svg"
   },
   "docs": {
     "readme": "README.md",
@@ -75,7 +75,7 @@
     "license_file": "LICENSE"
   },
   "social": {
-    "headline": "0.8 MB, no build step, real bloom - and every sound synthesized on the fly.",
+    "headline": "1 MB, no build step, real bloom - and every sound synthesized on the fly.",
     "hashtags": [
       "threejs",
       "webgl",
@@ -83,7 +83,7 @@
       "javascript",
       "webaudio"
     ],
-    "primary_link": "https://furkiozknn.github.io/nova-drift/"
+    "primary_link": "https://furkiozknn.github.io/isik-tuneli/"
   },
   "provenance": {
     "generated_at": "2026-09-22",

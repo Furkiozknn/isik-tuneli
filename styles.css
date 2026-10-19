@@ -351,3 +351,6 @@ body.rec, body.rec html { cursor: none; }
   .stack { gap: 10px; }
   .leaderboard { display: none; }
 }
+
+/* Run code on the game-over card: one tap selects the whole code (or the link). */
+.runCode .code { user-select: all; -webkit-user-select: all; letter-spacing: .12em; word-break: break-all; }

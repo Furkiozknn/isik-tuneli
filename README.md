@@ -1,13 +1,13 @@
-![Nova Drift](assets/banner.svg)
+![Işık Tüneli](assets/banner.svg)
 
-<p align="center"><img src="docs/reel/reel.gif" alt="nova-drift - 15 saniyelik tanıtım videosu" width="720"></p>
+<p align="center"><img src="docs/reel/reel.gif" alt="Işık Tüneli - 15 saniyelik tanıtım videosu" width="720"></p>
 <p align="center"><sub><a href="docs/reel/reel.mp4">Sesli MP4 sürümü</a></sub></p>
 
 <div align="center">
 
-**[▶ Play in your browser — furkiozknn.github.io/nova-drift](https://furkiozknn.github.io/nova-drift/)**
+**[▶ Play in your browser — furkiozknn.github.io/isik-tuneli](https://furkiozknn.github.io/isik-tuneli/)** · also on **[itch.io](https://furkiozknn.itch.io/isik-tuneli)**
 
-![Nova Drift gameplay: the ship banks through a tunnel of light rings, dodging red rocks and collecting cyan orbs while the score counts up to 673](assets/gameplay.webp)
+![Işık Tüneli gameplay: the ship banks through a tunnel of light rings, dodging red rocks and collecting cyan orbs while the score counts up to 673](assets/gameplay.webp)
 
 <sub>Real gameplay, not a montage: <code>node test/record-reel.js</code> opens the game with its interface hidden (<code>?rec=1</code>),
 steps it frame by frame, steers it with pointer input and writes every frame. Six seconds of one portrait run, 0.46 MB.</sub>
@@ -17,23 +17,23 @@ steps it frame by frame, steers it with pointer input and writes every frame. Si
 ![Build step](https://img.shields.io/badge/build%20step-none-6dff9e?style=flat-square)
 ![Audio](https://img.shields.io/badge/audio-synthesized%20live-ffd76d?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-browser%20(desktop%20%2B%20mobile)-7ee8ff?style=flat-square)
-[![CI](https://github.com/Furkiozknn/nova-drift/actions/workflows/ci.yml/badge.svg)](https://github.com/Furkiozknn/nova-drift/actions/workflows/ci.yml)
+[![CI](https://github.com/Furkiozknn/isik-tuneli/actions/workflows/ci.yml/badge.svg)](https://github.com/Furkiozknn/isik-tuneli/actions/workflows/ci.yml)
 
 </div>
 
 ---
 
-**Nova Drift** is an endless space-runner that plays in any modern browser. Your ship holds its line while a tunnel of light rushes past; you drift left, right, up and down to dodge red rocks, collect cyan orbs and grab power-ups, and the speed never stops climbing.
+**Işık Tüneli** (Turkish for "Light Tunnel"; formerly Nova Drift) is an endless space-runner that plays in any modern browser. Your ship holds its line while a tunnel of light rushes past; you drift left, right, up and down to dodge red rocks, collect cyan orbs and grab power-ups, and the speed never stops climbing.
 
 It is a small, honest piece of web tech: real [Three.js](https://threejs.org/) bloom post-processing, hand-written particle shaders, and an audio engine synthesized live with the Web Audio API — there is not a single sound file in the repository. Three.js and the font are vendored, so the page makes no request to any other origin. No bundler, no build step: serve the folder and play.
 
 | | |
 |---|---|
-| **Play** | [furkiozknn.github.io/nova-drift](https://furkiozknn.github.io/nova-drift/) — or [run it locally](#run-locally) in one command |
+| **Play** | [furkiozknn.github.io/isik-tuneli](https://furkiozknn.github.io/isik-tuneli/) or [furkiozknn.itch.io/isik-tuneli](https://furkiozknn.itch.io/isik-tuneli) — or [run it locally](#run-locally) in one command |
 | **Objective** | Survive as long as you can; score comes from distance, orbs and near-misses |
-| **Controls** | Mouse / touch-drag / arrow keys or WASD · `Space`/`Enter` start · `Esc` pause · Settings: sound, language (EN/TR) |
+| **Controls** | Mouse / touch-drag / arrow keys or WASD / gamepad · `Space`/`Enter` (or A) start · `Esc` (or Start) pause · Settings: sound, language (EN/TR) |
 | **Platform** | Desktop and mobile browsers with WebGL and import maps (Chrome/Edge 89+, Firefox 108+, Safari 16.4+) |
-| **Weight** | About 0.87 MB on first load (868,177 bytes measured), 19 requests, all from the page's own origin |
+| **Weight** | About 0.87 MB on first load (868,177 bytes measured before gamepad support and run codes; +11 KB since), 20 requests, all from the page's own origin |
 
 ## Table of Contents
 
@@ -44,6 +44,7 @@ It is a small, honest piece of web tech: real [Three.js](https://threejs.org/) b
   - [Scoring](#scoring)
   - [Leaderboard](#leaderboard)
   - [Daily Challenge](#daily-challenge)
+  - [Run Codes & Challenge Links](#run-codes--challenge-links)
 - [How It Works](#how-it-works)
   - [Scene, Camera & Tunnel](#scene-camera--tunnel)
   - [Bloom Pipeline](#bloom-pipeline)
@@ -78,9 +79,15 @@ Stay alive. A run ends the moment the ship touches a red rock (unless a shield a
 | 🖱️ Mouse move | Ship follows your pointer directly |
 | 👆 Touch-drag | A virtual joystick appears wherever you touch |
 | ⌨️ Arrow keys / WASD | Nudge the ship left / right / up / down |
+| 🎮 Gamepad left stick / d-pad | Steer, the same nudge as the arrow keys; letting go holds the line |
+| 🎮 A | Play from the menu, try again after a crash, resume from pause |
+| 🎮 Start | Pause and resume |
+| 🎮 B | From the pause card, back to the menu |
 | `Space` / `Enter` | Start or restart the run (a focused button gets its own key press instead) |
 | `Escape` / pause button | Pause — freezes the scene exactly where it was; Resume, Restart, Settings and Menu on the card |
 | Switch window / tab | Pauses automatically and releases any held key, so the ship does not drift into a wall while you are away |
+
+**Gamepad.** Any pad the browser reports in the standard layout works, and two pads can be connected at once (steering comes from whichever is pushed harder). The Gamepad API has no input events, so the page polls once per frame. Buttons act on the *press*, not the hold, so holding A through a crash does not instantly restart the run. Steering is a velocity like the touch joystick, so letting go holds your line instead of snapping back to the centre. A short hint names the buttons the first time a pad is used in a run. The mapping and the menu flow are pure functions in `gamepad.js`, which the tests import directly.
 
 The ship never chases your pointer instantly — its position *eases* toward a target each frame, and the last frame's velocity drives a small bank-and-tilt rotation, so movement reads as inertia rather than teleportation.
 
@@ -114,7 +121,17 @@ The top **5** scores persist locally via `localStorage` and are rendered on both
 
 A toggle on the start screen ("DAILY MODE" / "GÜNLÜK MOD") switches spawning from real randomness to a **seeded** run: a small [mulberry32](https://github.com/bryc/code/blob/master/jshash/PRNGs.md) PRNG, seeded from the current UTC date (`YYYYMMDD` as an integer), replaces every `Math.random()` call in the obstacle/orb/power-up spawn logic. Two players who open the page on the same calendar day get the byte-for-byte identical spawn sequence — same obstacles, same orbs, same power-ups, in the same order — so their scores are genuinely comparable, not just two unrelated random runs.
 
-Today's Daily Challenge best is tracked separately from the endless-mode top-5 (`localStorage` key `novaDriftDaily-YYYYMMDD`, one per day) so the two modes never mix. Regular endless mode is untouched — it still calls real `Math.random()` — this is strictly additive.
+Today's Daily Challenge best is tracked separately from the endless-mode top-5 (`localStorage` key `novaDriftDaily-YYYYMMDD`, one per day) so the two modes never mix.
+
+### Run Codes & Challenge Links
+
+Every run is seeded now, not only the daily one. An endless run draws a fresh random 32-bit seed, and the game-over card shows it as an 8-character **run code** such as `K7Q2-M9XA`. **COPY CHALLENGE LINK** puts a short line and a link on the clipboard: *"I scored 1234 in Işık Tüneli. Same rocks, same orbs. Beat it: …?run=K7Q2-M9XA"*. Whoever opens the link plays the exact same spawn sequence, so the comparison is fair with no server involved. The same idea already makes the Daily Challenge work; this extends it to any run, on any day.
+
+- **Code format.** Crockford base32 (no I, L, O or U), so a code read out loud or retyped from a screenshot survives. Case, dashes and spaces are ignored, and I/L/O are read as 1/1/0. The 8 characters carry the seed plus an 8-bit check, so a mistyped code is rejected instead of starting a different run. The test measures that more than 98% of one-character slips are caught.
+- **A challenge stays on for retries.** "Try again" replays the same code. A challenge link wins over `?daily=1`, and turning Daily Mode on ends the challenge. The HUD tag reads `CHALLENGE K7Q2-M9XA`.
+- **The link is clean.** It is the page address with `?run=` and nothing else, so it never carries `?debug=1`.
+- **No clipboard?** In an http page or a portal frame without permission, the card shows the link itself in place of the code, selectable in one tap.
+- **Scores.** Challenge runs count toward the local top 5 like any endless run. Nothing is stored that was not stored before.
 
 ---
 
@@ -183,7 +200,7 @@ The interface is English and Turkish. It follows the browser language (`tr*` get
 ## Platform & Performance
 
 - **Runs on** any browser with WebGL, ES modules and import maps — Chrome/Edge 89+, Firefox 108+, Safari 16.4+ — on desktop and mobile. The automated suite runs in Chromium; other engines are covered by the [manual smoke test](#manual-smoke-test). The page is also a PWA (`manifest.json`; "Add to Home Screen" launches it fullscreen).
-- **First load** is about 0.87 MB uncompressed across 19 requests (measured in Chromium against a local server: 868,177 bytes; `vendor/three.module.min.js` is 671 KB of that, the three font files 61 KB). Nothing comes from another origin, so it works on locked-down networks and inside game-portal iframes.
+- **First load** is about 0.99 MB uncompressed across 21 requests (measured in Chromium against a local server: 993,235 bytes; `vendor/three.module.js` + `vendor/three.core.js` are 766 KB of that, the three font files 61 KB). three 0.186 no longer publishes a minified build, so `scripts/vendor-three.mjs` minifies those two files with the pinned esbuild.
 - **Adaptive render scale.** A 60-frame moving average of frame time lowers the render scale in 0.15 steps (floor 0.6) when frames exceed 20 ms, and raises it in 0.1 steps below 12.5 ms, with a 2 s cooldown. The bloom pass is what a slow phone pays for, and it scales with pixel count.
 - **No allocation during play.** Obstacles, orbs, power-ups, stars and trail particles are pooled (see [Object Pooling](#object-pooling)); the physics step clamps `dt` to 0.05 s so a stalled frame never teleports the ship.
 - **Storage is optional.** Scores, the daily best, the mute switch and the language choice live in `localStorage`; when a browser refuses site data (private mode, third-party iframe) the game still starts and plays, it just forgets on reload.
@@ -193,8 +210,8 @@ The interface is English and Turkish. It follows the browser language (`tr*` get
 No install, no build, no bundler. Serve the folder over HTTP and open it:
 
 ```bash
-git clone https://github.com/Furkiozknn/nova-drift.git
-cd nova-drift
+git clone https://github.com/Furkiozknn/isik-tuneli.git
+cd isik-tuneli
 python3 -m http.server 8000      # then open http://localhost:8000
 # or, with Node:  npx serve .    # then open the printed URL
 ```
@@ -228,6 +245,8 @@ npm test                                      # 61 tests in 13 spec files
 | `smoke.spec.js` | No console errors with default and reduced-motion loads; the Daily toggle works; `manifest.json` is well-formed |
 | `focus.spec.js` | Switching window or tab pauses a running game and releases held keys |
 | `prng.spec.js` | The Daily Challenge RNG, executed from the real `rng.js` (not a copy): same seed, same sequence; stable across a UTC day; pinned to today's shipped sequence |
+| `gamepad.spec.js` | Gamepad mapping, executed from the real `gamepad.js`: deadzone, stick and d-pad, two pads, press-not-hold, the menu flow; then a fake pad drives the real page through start, steer, pause, resume, menu and a crash |
+| `run-code.spec.js` | Run codes, executed from the real `rng.js`: round trip, forgiving input, garbage rejected, one-character slips caught; then the page: the same code replays the same spawns, plain runs differ, an invalid code is ignored, the card shows the code and copies a clean link, Daily Mode ends a challenge |
 | `adaptive.spec.js` | The render-scale decision function (thresholds, hysteresis, floor/ceiling), isolated and against the live page via `?debug=1` |
 | `storage.spec.js` | The game starts, scores and mutes with `localStorage` throwing on every call |
 | `no-external-requests.spec.js` | Nothing leaves the origin (observed, not just blocked) |
@@ -269,11 +288,12 @@ The pilot is a humanlike pointer driver (0.17 s reaction delay, hand tremor, one
 ## Project Structure
 
 ```
-nova-drift/
+isik-tuneli/
 ├── index.html          # markup, HUD, overlays, import map, OG/Twitter meta
 ├── styles.css           # palette tokens, HUD, overlays, cards, buttons, screen band
 ├── script.js            # scene setup, game loop, audio, everything
-├── rng.js                # the daily seed + PRNG, alone so tests can import it
+├── rng.js                # the daily seed, the PRNG and run codes, alone so tests can import it
+├── gamepad.js            # gamepad mapping and menu flow, pure, alone for the same reason
 ├── manifest.json         # PWA manifest (installable, fullscreen)
 ├── package.json           # dev-only: Playwright test runner
 ├── playwright.config.js   # dev-only: Playwright config (serves the page over http, no build)

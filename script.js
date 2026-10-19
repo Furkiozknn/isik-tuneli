@@ -3,7 +3,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { mulberry32, dailySeed, dailyStorageKey } from './rng.js';
+import { mulberry32, dailySeed, dailyStorageKey, randomSeed, encodeRunCode, decodeRunCode } from './rng.js';
+import { readAll, rising, actionFor } from './gamepad.js';
 
 // ---------- Renderer / Scene / Camera ----------
 const canvas = document.getElementById('scene');
@@ -75,6 +76,9 @@ const STR = {
     hintPointer: 'Move the mouse to steer · collect cyan orbs · avoid red rocks',
     hintTouch: 'Drag anywhere to steer · collect cyan orbs · avoid red rocks',
     hintKeys: 'Arrows / WASD also steer · Esc pauses',
+    hintPad: 'Gamepad: left stick steers · A plays · Start pauses',
+    runCode: 'RUN CODE', copyLink: 'COPY CHALLENGE LINK', copied: 'LINK COPIED', challenge: 'CHALLENGE',
+    shareLine: 'I scored {s} in Işık Tüneli. Same rocks, same orbs. Beat it:',
     bestLine: 'BEST',
   },
   tr: {
@@ -89,6 +93,9 @@ const STR = {
     hintPointer: 'Yönlendirmek için fareyi oynat · camgöbeği küreleri topla · kırmızı kayalardan kaç',
     hintTouch: 'Yönlendirmek için ekranda sürükle · camgöbeği küreleri topla · kırmızı kayalardan kaç',
     hintKeys: 'Oklar / WASD de çalışır · Esc duraklatır',
+    hintPad: 'Oyun kolu: sol çubuk yönlendirir · A oynatır · Start duraklatır',
+    runCode: 'KOŞU KODU', copyLink: 'MEYDAN OKUMA LİNKİNİ KOPYALA', copied: 'LİNK KOPYALANDI', challenge: 'MEYDAN OKUMA',
+    shareLine: "Işık Tüneli'nde {s} puan yaptım. Aynı kayalar, aynı küreler. Geç bakalım:",
     bestLine: 'EN İYİ',
   },
 };
@@ -207,8 +214,8 @@ const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduce
 // decision (obstacle/orb/power-up type, position, and timing) is drawn from
 // this instead of Math.random(), seeded from today's UTC date — so every
 // player who plays on the same calendar day gets the exact same pattern and
-// scores are genuinely comparable. Regular endless mode leaves `spawnRng`
-// pointed at the real Math.random(), so its behavior is unchanged.
+// scores are genuinely comparable. Endless runs are seeded too, from a fresh
+// random seed, so any run can be replayed from its run code (see below).
 // mulberry32/todayUTCStamp/dailySeed/dailyStorageKey live in ./rng.js, which
 // touches neither the DOM nor Three - so test/prng.spec.js imports the file
 // this page actually loads instead of re-declaring a copy of it that can
@@ -224,7 +231,17 @@ function saveDailyBest(s) {
 }
 
 let dailyMode = new URLSearchParams(window.location.search).get('daily') === '1';
-let spawnRng = Math.random; // swapped to a seeded generator when Daily Challenge starts
+let spawnRng = Math.random; // replaced by a seeded generator at the start of every run
+
+// Run codes (rng.js). Every run is seeded now: the Daily Challenge from the
+// date, an endless run from a fresh random seed. The seed is shown on the
+// game-over card as a code, and a link with ?run=CODE replays that exact
+// spawn sequence, so "beat my score" is a fair race with no server. A valid
+// code in the URL starts a challenge, which wins over ?daily=1. An invalid
+// code is ignored and the page plays normally.
+let challengeSeed = decodeRunCode(new URLSearchParams(window.location.search).get('run') || '');
+if (challengeSeed !== null) dailyMode = false;
+let runSeed = 0;
 const rand = () => spawnRng();
 
 // Small record of recent spawns (position/type only) — used to verify that
@@ -781,6 +798,36 @@ window.addEventListener('keydown', (e) => {
 });
 window.addEventListener('keyup', (e) => keys.delete(e.code));
 
+// ---------- Input: gamepad ----------
+// Polled once per frame (the Gamepad API has no input events, only
+// connect/disconnect). Steering is a velocity like the touch joystick; the
+// buttons act on the press, through the same start/pause/resume functions the
+// keyboard uses. The mapping and the menu flow live in ./gamepad.js, which
+// test/gamepad.spec.js imports directly.
+let pad = { x: 0, y: 0, a: false, b: false, start: false, connected: false };
+let padPrev = pad;
+let padHintShown = false;
+function pollGamepad() {
+  if (!navigator.getGamepads) return;
+  let pads;
+  try { pads = navigator.getGamepads(); } catch { return; }
+  pad = readAll(pads);
+  const edge = rising(padPrev, pad);
+  padPrev = pad;
+  switch (actionFor(state, edge, settingsOpen)) {
+    case 'begin': beginFromMenu(); break;
+    case 'restart': startGame(); break;
+    case 'pause': pauseGame(); break;
+    case 'resume': resumeGame(); break;
+    case 'menu': goMenu(); break;
+    default: break;
+  }
+  if (pad.connected && !padHintShown && state === 'playing') {
+    padHintShown = true;
+    showHint(t.hintPad, 4000);
+  }
+}
+
 // A keyup that happens while another window has focus never reaches the page,
 // so a key held during an alt-tab would stay "held" and steer the ship into
 // the wall after the player came back. Forget held keys when focus goes, and
@@ -929,7 +976,34 @@ document.getElementById('pauseSettingsBtn').addEventListener('click', () => { sf
 document.getElementById('settingsDoneBtn').addEventListener('click', () => { sfx.click(); closeSettings(); });
 document.getElementById('menuBtn').addEventListener('click', () => { sfx.click(); withBand(goMenu); });
 document.getElementById('menuBtn2').addEventListener('click', () => { sfx.click(); withBand(goMenu); });
-document.getElementById('pauseRestartBtn').addEventListener('click', () => { sfx.click(); startGame(); });
+
+// The challenge link for the run that just ended: this page with ?run=CODE and
+// nothing else, so it never carries ?debug=1 or another player's state.
+const runCodeEl = document.getElementById('runCode');
+const shareBtn = document.getElementById('shareBtn');
+let lastShare = '';
+function challengeLink(seed = runSeed) {
+  const u = new URL(window.location.href);
+  u.search = '';
+  u.hash = '';
+  u.searchParams.set('run', encodeRunCode(seed));
+  return u.toString();
+}
+async function copyChallenge() {
+  lastShare = `${t.shareLine.replace('{s}', String(Math.floor(score)))} ${challengeLink()}`;
+  let ok = false;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(lastShare);
+      ok = true;
+    }
+  } catch { ok = false; }
+  // No clipboard (an http page, a portal frame without permission): show the
+  // link itself where the code was. It is selectable in one tap.
+  if (ok) shareBtn.textContent = t.copied;
+  else runCodeEl.textContent = challengeLink();
+}
+shareBtn.addEventListener('click', () => { sfx.click(); copyChallenge(); });document.getElementById('pauseRestartBtn').addEventListener('click', () => { sfx.click(); startGame(); });
 document.getElementById('startBtn').addEventListener('click', () => { sfx.click(); beginFromMenu(); });
 document.getElementById('restartBtn').addEventListener('click', () => { sfx.click(); startGame(); });
 document.getElementById('resumeBtn').addEventListener('click', () => { sfx.click(); resumeGame(); });
@@ -979,6 +1053,7 @@ pauseBtn.addEventListener('click', () => {
 dailyToggleBtn.addEventListener('click', () => {
   sfx.click();
   dailyMode = !dailyMode;
+  if (dailyMode) challengeSeed = null; // a challenge link is one specific run; Daily replaces it
   refreshDailyToggleUI();
 });
 
@@ -1022,7 +1097,8 @@ function startGame() {
   hudPulseT = 0;
   shakeT = 0;
   spawnLog = [];
-  spawnRng = dailyMode ? mulberry32(dailySeed()) : Math.random;
+  runSeed = dailyMode ? dailySeed() : (challengeSeed !== null ? challengeSeed : randomSeed());
+  spawnRng = mulberry32(runSeed);
   shipGroup.rotation.set(0, 0, 0);
   obstacles.forEach(resetPoolMesh);
   orbs.forEach(resetPoolMesh);
@@ -1034,7 +1110,8 @@ function startGame() {
   pauseScreen.classList.add('hidden');
   newBestEl.classList.add('hidden');
   newDailyBestEl.classList.add('hidden');
-  modeTagEl.classList.toggle('hidden', !dailyMode);
+  modeTagEl.classList.toggle('hidden', !dailyMode && challengeSeed === null);
+  modeTagEl.textContent = dailyMode ? t.modeTag : `${t.challenge} ${encodeRunCode(runSeed)}`;
   bestEl.textContent = dailyMode
     ? `${t.today}: ${Math.floor(loadDailyBest())}`
     : `${t.best}: ${Math.floor(best)}`;
@@ -1103,6 +1180,8 @@ function endGame() {
     dailyInfoEndEl.classList.add('hidden');
     leaderboardEndEl.classList.remove('hidden');
   }
+  runCodeEl.textContent = encodeRunCode(runSeed);
+  shareBtn.textContent = t.copyLink;
   const goCard = gameOverScreen.querySelector('.card');
   goCard.style.setProperty('--card-accent', !newBestEl.classList.contains('hidden') ? '#ffab40' : tierColor(score));
   updateBestLine();
@@ -1135,7 +1214,10 @@ function resumeGame() {
 }
 
 // ---------- Main loop ----------
-const clock = new THREE.Clock();
+// THREE.Timer replaces THREE.Clock, which three deprecated (it logs a warning
+// on construction). update() with no argument reads performance.now(), the
+// same source Clock used, so frame timing is unchanged.
+const timer = new THREE.Timer();
 let fovKick = 0;
 
 function updatePlaying(dt) {
@@ -1162,6 +1244,10 @@ function updatePlaying(dt) {
   if (joyActive) {
     target.x += joyVec.x * kSpeed * dt;
     target.y -= joyVec.y * kSpeed * dt;
+  }
+  if (pad.x !== 0 || pad.y !== 0) {
+    target.x += pad.x * kSpeed * dt;
+    target.y += pad.y * kSpeed * dt;
   }
   target.x = THREE.MathUtils.clamp(target.x, -PLAY_RADIUS, PLAY_RADIUS);
   target.y = THREE.MathUtils.clamp(target.y, -PLAY_RADIUS, PLAY_RADIUS);
@@ -1347,6 +1433,7 @@ function frame(rawDt, t, adapt, draw = true) {
 
   starMat.uniforms.uTime.value = t;
 
+  pollGamepad();
   if (state === 'playing') updatePlaying(dt);
   else if (state !== 'paused') idleDrift(t);
 
@@ -1355,7 +1442,8 @@ function frame(rawDt, t, adapt, draw = true) {
 
 function animate() {
   if (manual) return;
-  frame(clock.getDelta(), clock.getElapsedTime(), true);
+  timer.update();
+  frame(timer.getDelta(), timer.getElapsed(), true);
   requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
@@ -1371,12 +1459,18 @@ if (new URLSearchParams(window.location.search).get('debug') === '1') {
       dailyMode = true;
       refreshDailyToggleUI();
       startGame();
-      if (seed !== undefined) spawnRng = mulberry32(Number(seed));
+      if (seed !== undefined) { runSeed = Number(seed) >>> 0; spawnRng = mulberry32(runSeed); }
     },
     getSpawnLog() { return spawnLog.slice(); },
     dailySeed,
     getRenderScale() { return renderScale; },
     heldKeys() { return [...keys]; },
+    pad() { return { ...pad }; },
+    runSeed() { return runSeed; },
+    lastShare() { return lastShare; },
+    challengeLink,
+    // Ends the run the way a rock does, for tests that need a game-over screen.
+    crash() { if (state === 'playing') endGame(); },
     // Frame-exact driving, used to record the promo clip and to measure input
     // latency: manual() stops the rAF loop, step(dt) advances one frame
     // (step(dt, false) skips drawing: a software-GL machine cannot keep up with

@@ -1,17 +1,18 @@
 {
-  "name": "nova-drift",
+  "name": "isik-tuneli",
   "private": true,
-  "description": "Dev-only Playwright smoke test for Nova Drift. The game itself has no build step and never will - this file exists purely so CI can load-test the live page in a browser.",
-  "homepage": "https://furkiozknn.github.io/nova-drift/",
+  "description": "Dev-only Playwright smoke test for Işık Tüneli. The game itself has no build step and never will - this file exists purely so CI can load-test the live page in a browser.",
+  "homepage": "https://furkiozknn.github.io/isik-tuneli/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Furkiozknn/nova-drift.git"
+    "url": "git+https://github.com/Furkiozknn/isik-tuneli.git"
   },
   "scripts": {
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
-    "three": "^0.160.0"
+    "@playwright/test": "^1.64.1",
+    "esbuild": "0.28.2",
+    "three": "^0.186.1"
   }
 }

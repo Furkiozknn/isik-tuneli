@@ -4,7 +4,11 @@ const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: './test',
-  timeout: 30000,
+  // 60 s per test. CI renders WebGL in software (SwiftShader), so a test that
+  // loads the page twice and clicks through Settings spends most of its time
+  // waiting for frames. Those took ~20 s with three r160 and 21-31 s with
+  // r186 (2026-10-19, PRs #21 and #22), so 30 s failed at random.
+  timeout: 60000,
   fullyParallel: true,
   // Yerelde 1 işçi: makinede 8 GB RAM var, paralel çalıştırma worker'ları
   // "JavaScript heap out of memory" ile düşürüyor. CI'da sınır yok.

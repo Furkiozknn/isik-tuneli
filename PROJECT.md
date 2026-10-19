@@ -1,4 +1,4 @@
-# nova-drift
+# isik-tuneli (Işık Tüneli)
 
 **Hedef**: Tarayıcıda oynanan, uzayda bir tünelde ilerleyen küçük bir endless-arcade oyunu — sağa/sola (ve yukarı/aşağı) hareket ederek engellerden kaçıp ışık küreleri toplamak, hız zamanla artar, çarpışınca oyun biter ve skor gösterilir.
 

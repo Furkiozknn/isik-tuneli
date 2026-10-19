@@ -1,4 +1,4 @@
-# Katki Rehberi -- nova-drift
+# Katki Rehberi -- isik-tuneli
 
 Katkida bulunmak istedigin icin tesekkurler. Bu rehber, daha once hic
 katki yapmamis birinin de ilk pull request'ini sorunsuz acabilmesi icin
@@ -13,8 +13,8 @@ islenir.
 Ekosistem: **node**
 
 ```
-git clone https://github.com/Furkiozknn/nova-drift.git
-cd nova-drift
+git clone https://github.com/Furkiozknn/isik-tuneli.git
+cd isik-tuneli
 npm ci
 ```
 
