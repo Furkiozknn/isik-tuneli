@@ -164,7 +164,7 @@ Colors are rendered in `SRGBColorSpace` and finished with `ACESFilmicToneMapping
 Two independent point-cloud systems, both custom `ShaderMaterial`s with additive blending and pixel-ratio-aware point sizing so they stay crisp on high-DPI screens:
 
 - **Starfield** — 700 points with a per-star phase offset driving a sine-wave twinkle in the fragment shader
-- **Engine trail + impact bursts** — a shared pool of 70 particles. Idle exhaust spawns continuously behind the ship in alternating pink/cyan; a shield block, an orb pickup and a power-up pickup each spawn a small radial burst (5, 5 and 10 particles) at the spot. Both fade via a `life` value decayed each frame
+- **Engine trail + impact bursts** — a shared pool of 70 particles. Idle exhaust spawns continuously behind the ship in alternating pink/cyan; a shield block, an orb pickup and a power-up pickup each spawn a small radial burst (14, 5 and 10 particles) at the spot. Both fade via a `life` value decayed each frame
 
 ### Object Pooling
 
@@ -354,6 +354,6 @@ Built with Claude Code; the `Co-Authored-By` trail in the commit history shows w
 
 - **[masal](https://github.com/Furkiozknn/masal)** — çocuğun adına yazılan uyku öncesi masalı
 - **[buradane](https://github.com/Furkiozknn/buradane)** — ihtiyaç odaklı 167.829 OpenStreetMap noktası
-- **[turkce-ajanlar](https://github.com/Furkiozknn/turkce-ajanlar)** — Türkçe düşünen 70 Claude Code alt-ajanı
+- **[turkce-ajanlar](https://github.com/Furkiozknn/turkce-ajanlar)** — Türkçe düşünen 71 Claude Code alt-ajanı
 
 <sub>Hepsi tek bir aranabilir sayfada: **[furkiozknn.github.io](https://furkiozknn.github.io/)** — her kart, o deponun kendi <code>project-meta.json</code> dosyasından üretiliyor.</sub>
