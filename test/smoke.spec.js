@@ -54,7 +54,7 @@ test('manifest.json is present and well-formed', async ({ page, request, baseURL
   const res = await request.get('/manifest.json');
   expect(res.ok()).toBeTruthy();
   const manifest = await res.json();
-  expect(manifest.name).toBe('Nova Drift');
+  expect(manifest.name).toBe('Işık Tüneli');
   expect(Array.isArray(manifest.icons)).toBe(true);
   expect(manifest.icons.length).toBeGreaterThan(0);
 });

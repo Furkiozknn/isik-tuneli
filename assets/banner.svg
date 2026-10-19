@@ -95,7 +95,7 @@
   <path d="M600 178 L620 232 L600 220 L580 232 Z" fill="#fff6e6"/>
 
   <!-- title -->
-  <text x="600" y="210" text-anchor="middle" font-family="Orbitron, 'Segoe UI', sans-serif" font-weight="900" font-size="96" fill="url(#title)" filter="url(#softglow)" letter-spacing="10">NOVA DRIFT</text>
+  <text x="600" y="210" text-anchor="middle" font-family="Orbitron, 'Segoe UI', sans-serif" font-weight="900" font-size="96" fill="url(#title)" filter="url(#softglow)" letter-spacing="10">IŞIK TÜNELİ</text>
 
   <text x="600" y="260" text-anchor="middle" font-family="Orbitron, 'Segoe UI', sans-serif" font-weight="700" font-size="19" fill="#e2d4eb" letter-spacing="7" opacity="0.85">AN ENDLESS ARCADE SPACE-TUNNEL DODGER</text>
 

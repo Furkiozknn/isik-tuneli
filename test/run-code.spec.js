@@ -144,7 +144,7 @@ test.describe('in the page', () => {
     const u = new URL(link);
     expect([...u.searchParams.keys()]).toEqual(['run']); // never carries ?debug=1
     expect(rng.decodeRunCode(u.searchParams.get('run'))).toBe(seed);
-    expect(share).toMatch(/^I scored \d+ in Nova Drift/);
+    expect(share).toMatch(/^I scored \d+ in Işık Tüneli/);
     await expect(page.locator('#shareBtn')).toHaveText(/LINK COPIED|COPY CHALLENGE LINK/);
   });
 
